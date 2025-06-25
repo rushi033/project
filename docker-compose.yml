@@ -14,10 +14,10 @@ services:
     command: ["zap.sh", "-daemon", "-host", "0.0.0.0", "-port", "8080", "-config", "api.disablekey=true"]
 
   jenkins:
+    jenkins:
     image: jenkins/jenkins:lts
-    container_name: jenkins
     ports:
-      - "8080:8080"
+      - "9090:8080"  # host:container
     volumes:
       - ./jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
