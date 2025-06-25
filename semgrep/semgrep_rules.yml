@@ -1,0 +1,9 @@
+rules:
+  - id: avoid-eval
+    pattern: eval(...)
+    message: "Use of eval() detected. Avoid dynamic code execution."
+    severity: ERROR
+    languages: [python, javascript]
+    metadata:
+      owasp: A1-Injection
+
