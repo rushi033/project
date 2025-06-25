@@ -1,14 +1,12 @@
 version: '3'
 services:
   zap:
-    image: owasp/zap2docker-stable
+    image: owasp/zap2docker-weekly
     container_name: zap
     networks:
       - scan_net
-    entrypoint: [""]
-    volumes:
-      - ./zap-scanner:/zap/wrk/:rw
-
+    ports:
+      - "8090:8090"
   jenkins:
     image: jenkins/jenkins:lts
     container_name: jenkins
