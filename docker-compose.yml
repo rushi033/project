@@ -1,11 +1,17 @@
 version: '3'
+
 services:
   zap:
-    image: owasp/zap2docker-stable
+    image: ghcr.io/zaproxy/zaproxy:latest  # ✅ updated working ZAP image
     container_name: zap
     tty: true
     networks:
       - scan_net
+    ports:
+      - "8090:8080"  # Optional: expose ZAP if needed
+    volumes:
+      - ./reports:/zap/reports
+    command: ["zap.sh", "-daemon", "-host", "0.0.0.0", "-port", "8080", "-config", "api.disablekey=true"]
 
   jenkins:
     image: jenkins/jenkins:lts
