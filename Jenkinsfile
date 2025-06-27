@@ -29,7 +29,7 @@ pipeline {
 
             # Start the ZAP container in daemon mode
             echo "Starting ZAP container..."
-            docker run -u root -d --name zap -p 8090:8090 -v $(pwd):/zap owasp/zap2docker-stable zap.sh -daemon -host 0.0.0.0 -port 8090
+            sh 'docker run -u root -d --name zap -p 8090:8090 -v $(pwd):/zap ghcr.io/zaproxy/zaproxy zap -daemon -host 0.0.0.0 -port 8090'
 
             echo "Waiting for ZAP to fully start..."
             sleep 20
