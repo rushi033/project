@@ -17,16 +17,17 @@ pipeline {
         }
 
         stage('Run ZAP Scan') {
-    steps {
-        sh 'echo Checking zap-scan script existence...'
-        sh 'ls -l zap-scanner/'
-        sh 'test -f zap-scanner/zap_scan.py'
+          steps {
+            sh 'echo Checking zap-scan script existence...'
+            sh 'ls -l zap-scanner/'
+            sh 'test -f zap-scanner/zap_scan.py'
 
-        sh 'docker rm -f zap || true'
-        sh 'echo Starting ZAP container...'
-        sh 'docker run -u root -d --name zap -p 8090:8090 -v $(pwd):/zap ghcr.io/zaproxy/zaproxy zap -daemon -host 0.0.0.0 -port 8090'
+           sh 'docker rm -f zap || true'
+           sh 'echo Starting ZAP container...'
+           sh 'docker run -u root -d --name zap -p 8090:8090 -v $(pwd):/zap ghcr.io/zaproxy/zaproxy zap.sh -daemon -host 0.0.0.0 -port 8090'
     }
 }
+
 
 
         stage('Generate DOCX Report') {
