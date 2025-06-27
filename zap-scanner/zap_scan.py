@@ -1,7 +1,8 @@
 from zapv2 import ZAPv2
 import time
 
-target = 'http://your-app-url'  # Replace dynamically or via ENV
+target = 'http://your-app-url'
+  # Replace dynamically or via ENV
 apikey = 'changeme'
 zap = ZAPv2(apikey=apikey)
 
