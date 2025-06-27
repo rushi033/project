@@ -4,9 +4,9 @@ pipeline {
     stages {
         stage('Clone Repo') {
             steps {
-                git 'https://github.com/your-username/your-web-app.git'
-            }
-        }
+    git credentialsId: 'github-ssh-key', url: 'git@github.com:Onkar-kumbhar/exam-3025.git', branch: 'main'
+  }
+}
 
         stage('Run Semgrep') {
             steps {
