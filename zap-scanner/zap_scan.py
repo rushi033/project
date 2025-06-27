@@ -1,8 +1,8 @@
 from zapv2 import ZAPv2
 import time
+import os
 
-target = 'http://your-app-url'
-  # Replace dynamically or via ENV
+target = os.environ.get('ZAP_TARGET', 'http://host.docker.internal:8080')
 apikey = 'changeme'
 zap = ZAPv2(apikey=apikey)
 
