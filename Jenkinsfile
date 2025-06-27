@@ -21,7 +21,7 @@ pipeline {
         sh '''#!/bin/bash
         docker rm -f zap || true
         echo "Starting ZAP container..."
-        docker run -u root -d --name zap -p 8090:8090 -v $(pwd):/zap ghcr.io/zaproxy/zaproxy zap-x.sh -daemon -host 0.0.0.0 -port 8090
+        docker run -u root -d --name zap -p 8090:8090 -v $(pwd):/zap ghcr.io/zaproxy/zaproxy zap.sh -daemon -host 0.0.0.0 -port 8090
         '''
     }
 }
