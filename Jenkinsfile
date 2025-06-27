@@ -17,15 +17,12 @@ pipeline {
         }
 
         stage('Run ZAP Scan') {
-          steps {
-            sh 'echo Checking zap-scan script existence...'
-            sh 'ls -l zap-scanner/'
-            sh 'test -f zap-scanner/zap_scan.py'
-
-           sh 'docker rm -f zap || true'
-           sh 'echo Starting ZAP container...'
-           docker run -u root -d --name zap -p 8090:8090 -v $(pwd):/zap ghcr.io/zaproxy/zaproxy zap-x.sh -daemon -host 0.0.0.0 -port 8090
-
+    steps {
+        sh '''#!/bin/bash
+        docker rm -f zap || true
+        echo "Starting ZAP container..."
+        docker run -u root -d --name zap -p 8090:8090 -v $(pwd):/zap ghcr.io/zaproxy/zaproxy zap-x.sh -daemon -host 0.0.0.0 -port 8090
+        '''
     }
 }
 
