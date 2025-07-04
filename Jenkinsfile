@@ -17,13 +17,16 @@ pipeline {
         }
 
         stage('Generate DOCX Report') {
-            steps {
-                sh '''
-                pip install python-docx
-                python3 report-generator/generate_report.py
-                '''
-            }
-        }
+    steps {
+        sh '''
+        mkdir -p reports
+        chmod 777 reports
+        pip install --user python-docx
+        python3 report-generator/generate_report.py
+       
+    }
+}
+
 
         stage('Archive Reports') {
             steps {
