@@ -1,11 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        REPORTS_DIR = "reports"
-        PETCLINIC_URL = "http://<machine-ip>/petclinic"  // Replace with actual IP or hostname
-    }
-
     stages {
         stage('Clone Repo') {
             steps {
@@ -16,47 +11,47 @@ pipeline {
         stage('Run Semgrep') {
             steps {
                 sh '''
-                mkdir -p ${REPORTS_DIR}
-                docker run --rm -v $(pwd):/src returntocorp/semgrep semgrep --config=semgrep/semgrep_rules.yml --output ${REPORTS_DIR}/semgrep_report.txt
+                docker run --rm -v $(pwd):/src returntocorp/semgrep semgrep --config=semgrep/semgrep_rules.yml --output reports/semgrep_report.txt
                 '''
             }
         }
 
-        stage('Run OWASP ZAP') {
+        stage('Run ZAP Scan') {
             steps {
-                script {
-                    sh '''
-                    mkdir -p ${REPORTS_DIR}
+                sh '''#!/bin/bash
+                # Remove any existing ZAP container
+                docker rm -f zap || true
+                
+                # Start ZAP container in daemon mode
+                echo "Starting ZAP container..."
+                docker run -u root -d --name zap -p 8090:8090 -v $(pwd):/zap owasp/zap2docker-stable zap.sh -daemon -host 0.0.0.0 -port 8090
+                
+                # Sleep to ensure ZAP starts fully
+                sleep 30
+                
+                # Define the URL for your GitHub repository's hosted application (or GitHub Pages)
+                # Replace this URL with the actual hosted app URL (e.g., GitHub Pages, etc.)
+                def targetUrl = "https://git@github.com:Onkar-kumbhar/exam-3025.git"
 
-                    echo "Starting ZAP in background..."
-                    /snap/bin/zaproxy -daemon -host 127.0.0.1 -port 8090 -config api.disablekey=true &
-
-                    echo "Waiting for ZAP to be ready..."
-                    until curl --silent --output /dev/null http://127.0.0.1:8090; do
-                      sleep 5
-                      echo "Still waiting for ZAP..."
-                    done
-
-                    echo "ZAP is ready. Starting Spider Scan..."
-                    curl "http://127.0.0.1:8090/JSON/spider/action/scan/?url=${PETCLINIC_URL}"
-
-                    echo "Starting Active Scan..."
-                    curl "http://127.0.0.1:8090/JSON/ascan/action/scan/?url=${PETCLINIC_URL}&recurse=true"
-
-                    echo "Waiting for Active Scan to complete..."
-                    sleep 30  # Optional: implement proper polling here if needed
-
-                    echo "Downloading ZAP HTML Report..."
-                    curl "http://127.0.0.1:8090/OTHER/core/other/htmlreport/" -o ${REPORTS_DIR}/zapReport.html
-                    '''
-                }
+                # Run Spider scan to discover URLs and resources
+                curl http://localhost:8090/JSON/spider/action/scan/?url=${targetUrl}
+                
+                # Run Active scan with recursion enabled
+                curl http://localhost:8090/JSON/ascan/action/scan/?url=${targetUrl}&recurse=true
+                
+                # Wait for the scan to complete (can be adjusted based on your app's size and complexity)
+                sleep 60
+                
+                # Generate HTML report for ZAP
+                curl http://localhost:8090/OTHER/core/other/htmlreport/ > reports/zapReport.html
+                '''
             }
         }
 
         stage('Generate DOCX Report') {
             steps {
                 sh '''
-                pip install --user python-docx
+                pip install python-docx
                 python3 report-generator/generate_report.py
                 '''
             }
@@ -68,14 +63,4 @@ pipeline {
             }
         }
     }
-
-    post {
-        always {
-            echo 'Pipeline execution finished.'
-        }
-        cleanup {
-            sh 'pkill -f zaproxy || true'
-        }
-    }
 }
-
