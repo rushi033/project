@@ -9,14 +9,14 @@ pipeline {
         }
 
         stage('Prepare Reports Directory') {
-            steps {
-                sh '''
-                mkdir -p reports
-                chown -R $(id -u):$(id -g) reports
-                chmod -R u+w reports
-                '''
-            }
-        }
+    steps {
+        sh '''
+        rm -rf reports
+        mkdir reports
+        '''
+    }
+}
+
 
         stage('Run Semgrep') {
             steps {
