@@ -12,9 +12,9 @@ pipeline {
             steps {
                 sh '''
                 mkdir -p reports
-                docker run --rm -v $(pwd):/src --user $(id -u):$(id -g) returntocorp/semgrep semgrep \
-                --config=semgrep/semgrep_rules.yml \
-                --output reports/semgrep_report.txt
+                docker run --rm -v $(pwd):/src --user $(id -u):$(id -g) -e HOME=/src returntocorp/semgrep semgrep \
+                    --config=semgrep/semgrep_rules.yml \
+                    --output reports/semgrep_report.txt
                 '''
             }
         }
