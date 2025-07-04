@@ -8,10 +8,19 @@ pipeline {
             }
         }
 
-        stage('Run Semgrep') {
+        stage('Prepare Reports Directory') {
             steps {
                 sh '''
                 mkdir -p reports
+                chown -R $(id -u):$(id -g) reports
+                chmod -R u+w reports
+                '''
+            }
+        }
+
+        stage('Run Semgrep') {
+            steps {
+                sh '''
                 docker run --rm -v $(pwd):/src --user $(id -u):$(id -g) -e HOME=/src returntocorp/semgrep semgrep \
                     --config=semgrep/semgrep_rules.yml \
                     --output reports/semgrep_report.txt
@@ -22,7 +31,6 @@ pipeline {
         stage('Run Trivy Scan') {
             steps {
                 sh '''
-                mkdir -p reports
                 docker pull aquasec/trivy:latest
 
                 # Build or pull the image you want to scan (e.g. petclinic)
@@ -38,7 +46,6 @@ pipeline {
         stage('Generate DOCX Report') {
             steps {
                 sh '''
-                mkdir -p reports
                 pip install --user python-docx
                 python3 report-generator/generate_report.py
                 '''
