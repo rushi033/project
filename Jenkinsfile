@@ -8,21 +8,22 @@ pipeline {
             }
         }
 
-        stage('Run Semgrep') {
-            steps {
-                sh '''
-                mkdir -p reports
-                docker run --rm \
-                  -u $(id -u):$(id -g) \
-                  -e HOME=/tmp \
-                  -v $(pwd):/src \
-                  returntocorp/semgrep \
-                  semgrep --config=semgrep/semgrep_rules.yml --output /src/reports/semgrep_report.txt
-                '''
-            }
-        }
+    stage('Run Semgrep') {
+      steps {
+        sh '''
+        mkdir -p reports
+        chmod 777 reports
 
-        stage('Generate DOCX Report') {
+        docker run --rm \
+          -u $(id -u):$(id -g) \
+          -e HOME=/tmp \
+          -v $(pwd):/src \
+          returntocorp/semgrep \
+          semgrep --config=semgrep/semgrep_rules.yml --output /src/reports/semgrep_report.txt
+        '''
+    }
+}
+    stage('Generate DOCX Report') {
             steps {
                 sh '''
                 pip install python-docx
