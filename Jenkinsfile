@@ -17,19 +17,19 @@ pipeline {
         }
 
     stage('Run ZAP Scan') {
-        steps {
+      steps {
         sh '''#!/bin/bash
         set -e
 
-        # Create reports directory if not exists
-        mkdir -p reports
-        chmod 777 reports
+        # Clean reports folder if exists
+        rm -rf reports
+        mkdir reports
 
         # Remove existing container if any
         docker rm -f zap || true
 
-        # Set the target app URL (should be a running web app)
-        targetUrl="http://your-app:8080"  # CHANGE THIS
+        # Set the target app URL (must be running!)
+        targetUrl="http://your-app:8080"  # CHANGE THIS!
 
         # Run ZAP in baseline scan mode
         docker run --rm \
@@ -39,6 +39,7 @@ pipeline {
         '''
     }
 }
+
 
 
         stage('Generate DOCX Report') {
