@@ -8,30 +8,35 @@ pipeline {
             }
         }
 
-        stage('Run Semgrep') {
-            steps {
-                sh '''
-                docker run --rm -v $(pwd):/src returntocorp/semgrep semgrep --config=semgrep/semgrep_rules.yml --output reports/semgrep_report.txt
-                '''
-            }
-        }
+    stage('Run Semgrep') {
+    steps {
+        sh '''
+        mkdir -p reports
+        docker run --rm -u $(id -u):$(id -g) -v $(pwd):/src returntocorp/semgrep \
+          semgrep --config=semgrep/semgrep_rules.yml --output /src/reports/semgrep_report.txt
+        '''
+    }
+}
+
 
     stage('Run ZAP Scan') {
-      steps {
+        steps {
         sh '''#!/bin/bash
         set -e
 
-        # Clean reports folder if exists
-        rm -rf reports
-        mkdir reports
+        # Create reports directory if it doesn't exist
+        mkdir -p reports
 
-        # Remove existing container if any
+        # Only remove the ZAP report file — do NOT remove the whole folder!
+        rm -f reports/zapReport.html || true
+
+        # Remove any running ZAP container
         docker rm -f zap || true
 
-        # Set the target app URL (must be running!)
-        targetUrl="http://your-app:8080"  # CHANGE THIS!
+        # Set the target application URL (must be running)
+        targetUrl="http://your-app:8080"  # CHANGE THIS
 
-        # Run ZAP in baseline scan mode
+        # Run ZAP baseline scan
         docker run --rm \
           -v $(pwd)/reports:/zap/reports \
           owasp/zap2docker-stable zap-baseline.py \
@@ -39,6 +44,7 @@ pipeline {
         '''
     }
 }
+
 
 
 
