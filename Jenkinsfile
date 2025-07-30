@@ -9,20 +9,21 @@ pipeline {
         }
 
     stage('Run Semgrep') {
-      steps {
+    steps {
         sh '''
         mkdir -p reports
-        chmod 777 reports
 
         docker run --rm \
           -u $(id -u):$(id -g) \
           -e HOME=/tmp \
           -v $(pwd):/src \
           returntocorp/semgrep \
-          semgrep --config=semgrep/semgrep_rules.yml --output /src/reports/semgrep_report.txt
+          sh -c "semgrep --config=/src/semgrep/semgrep_rules.yml --output=/tmp/semgrep_report.txt && cp /tmp/semgrep_report.txt /src/reports/"
+
         '''
     }
 }
+
     stage('Generate DOCX Report') {
             steps {
                 sh '''
