@@ -12,11 +12,16 @@ pipeline {
     steps {
         sh '''
         mkdir -p reports
-        docker run --rm -u $(id -u):$(id -g) -v $(pwd):/src returntocorp/semgrep \
+        docker run --rm \
+          -u $(id -u):$(id -g) \
+          -e HOME=/tmp \
+          -v $(pwd):/src \
+          returntocorp/semgrep \
           semgrep --config=semgrep/semgrep_rules.yml --output /src/reports/semgrep_report.txt
         '''
     }
 }
+
 
 
     stage('Run ZAP Scan') {
