@@ -13,17 +13,13 @@ pipeline {
                 sh '''
                 mkdir -p reports
 
-                # Take ownership to avoid permission issues
-                sudo chown -R $(id -u):$(id -g) reports || true
-
-                rm -f reports/semgrep_report.txt || true
-
+                # Run Semgrep and always overwrite the report
                 docker run --rm \
-                    -u $(id -u):$(id -g) \
+                    -u 0:0 \  # run as root inside container to avoid permission issues
                     -e HOME=/tmp \
                     -v $(pwd):/src \
                     returntocorp/semgrep \
-                    sh -c "semgrep --config=/src/semgrep/semgrep_rules.yml --output=/tmp/semgrep_report.txt && cp /tmp/semgrep_report.txt /src/reports/"
+                    sh -c "semgrep --config=/src/semgrep/semgrep_rules.yml --output=/src/reports/semgrep_report.txt --force-color"
                 '''
             }
         }
