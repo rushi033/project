@@ -1,9 +1,7 @@
 rules:
-  - id: avoid-eval
+  - id: detect-eval
     patterns:
       - pattern: eval(...)
-    message: "Avoid using eval(). It's dangerous."
+    message: "Avoid using eval(); it's a security risk."
     severity: ERROR
     languages: [python]
-    metadata:
-      owasp: A1-Injection
