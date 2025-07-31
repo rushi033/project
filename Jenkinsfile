@@ -1,10 +1,10 @@
 pipeline {
     agent any
 
-    stages {
+       stages {
         stage('Checkout Code') {
             steps {
-                git 'https://github.com/Onkar-kumbhar/DevSecOps.git'
+                git branch: 'main', url: 'https://github.com/Onkar-kumbhar/DevSecOps.git'
             }
         }
 
