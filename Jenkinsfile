@@ -9,20 +9,20 @@ pipeline {
         }
 
         stage('Run Semgrep') {
-        steps {
-        sh '''
-        mkdir -p reports
+            steps {
+                sh '''
+                mkdir -p reports
 
-        # Run semgrep and write directly to mounted host volume
-        docker run --rm \
-            -u 0:0 \
-            -v $(pwd):/src \
-            -w /src \
-            returntocorp/semgrep \
-            semgrep --config=semgrep/semgrep_rules.yml \
-                    --output=reports/semgrep_report.txt \
-                    --force-color
-        '''
+                # Run Semgrep and output directly into mounted folder
+                docker run --rm \
+                    -v $(pwd):/src \
+                    -w /src \
+                    returntocorp/semgrep \
+                    semgrep --config=semgrep/semgrep_rules.yml \
+                            --output=reports/semgrep_report.txt \
+                            --force-color
+                '''
+            }
+        }
     }
 }
-
