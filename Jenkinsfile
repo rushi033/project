@@ -12,17 +12,17 @@ pipeline {
             steps {
                 sh '''
                 mkdir -p reports
+# Take ownership to avoid permission issues from Docker-created files
+                sudo chown -R $(id -u):$(id -g) reports
                 rm -f reports/semgrep_report.txt
 
                 docker run --rm \
-                  -u $(id -u):$(id -g) \
-                  -e HOME=/tmp \
-                  -v $(pwd):/src \
-                  returntocorp/semgrep \
-                  sh -c "semgrep --config=/src/semgrep/semgrep_rules.yml --output=/tmp/semgrep_report.txt && cp /tmp/semgrep_report.txt /src/reports/"
-                '''
-            }
-        }
+                -u $(id -u):$(id -g) \
+                 -e HOME=/tmp \
+                 -v $(pwd):/src \
+                returntocorp/semgrep \
+                 sh -c "semgrep --config=/src/semgrep/semgrep_rules.yml --output=/tmp/semgrep_report.txt && cp /tmp/semgrep_report.txt /src/reports/"
+'''
 
         stage('Generate DOCX Report') {
             steps {
