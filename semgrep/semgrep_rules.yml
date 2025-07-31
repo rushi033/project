@@ -1,15 +1,8 @@
 rules:
   - id: avoid-eval
-    pattern: eval(...)
-    message: "Use of eval() detected. Avoid dynamic code execution."
-    severity: ERROR
-    languages: [python]
-    metadata:
-      owasp: A1-Injection
-
-  - id: raw-sqlite
-    pattern: cursor.execute(f"SELECT * FROM users WHERE username='{user}' AND password='{pwd}'")
-    message: "Possible SQL Injection using string interpolation."
+    patterns:
+      - pattern: eval(...)
+    message: "Avoid using eval(). It's dangerous."
     severity: ERROR
     languages: [python]
     metadata:
