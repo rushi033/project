@@ -15,7 +15,7 @@ pipeline {
 
                 # Run Semgrep and always overwrite the report
                 docker run --rm \
-                    -u 0:0 \  # run as root inside container to avoid permission issues
+                    -u 0:0 \
                     -e HOME=/tmp \
                     -v $(pwd):/src \
                     returntocorp/semgrep \
@@ -25,4 +25,3 @@ pipeline {
         }
     }
 }
-
