@@ -14,13 +14,14 @@ pipeline {
             mkdir -p reports
             docker run --rm \
                 -v "$PWD/app:/src" \
-                -v "$PWD/semgrep_rules.yml:/semgrep_rules.yml" \
+                -v "$PWD/semgrep/semgrep_rules.yml:/semgrep_rules.yml" \
                 returntocorp/semgrep \
                 semgrep --config=/semgrep_rules.yml \
                         --output=/src/../reports/semgrep_report.txt
         '''
     }
 }
+
 
 
 
