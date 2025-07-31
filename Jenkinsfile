@@ -8,19 +8,19 @@ pipeline {
             }
         }
 
-        stage('Run Semgrep Scan') {
-            steps {
-                sh '''
-                mkdir -p reports
-                docker run --rm \
-           -v "$PWD/app":/src \
-           -v "$PWD/semgrep_rules.yml":/semgrep_rules.yml \
-           returntocorp/semgrep \
-          semgrep --config=/semgrep_rules.yml \
-          --output=/src/../reports/semgrep_report.txt
+        stage('Run Semgrep') {
+  steps {
+    sh '''
+      docker run --rm \
+        -v "$PWD/app":/src \
+        -v "$PWD/semgrep_rules.yml":/rules/semgrep_rules.yml \
+        returntocorp/semgrep \
+        semgrep --config=/rules/semgrep_rules.yml \
+                --output=/src/../reports/semgrep_report.txt
+    '''
+  }
+}
 
-            }
-        }
 
         stage('Display Semgrep Report') {
             steps {
