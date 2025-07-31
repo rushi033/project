@@ -1,7 +1,6 @@
 rules:
   - id: detect-eval
-    patterns:
-      - pattern: eval(...)
+    pattern: eval($X)
     message: "Avoid using eval(); it's a security risk."
     severity: ERROR
     languages: [python]

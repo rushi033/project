@@ -1,0 +1,6 @@
+File: /src/app.py
+Line: 21
+Message: Avoid using eval(); it's a security risk.
+Rule: detect-eval
+Severity: ERROR
+---
