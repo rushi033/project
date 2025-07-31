@@ -2,25 +2,29 @@ pipeline {
     agent any
 
     stages {
-        stage('Clone Repo') {
+        stage('Checkout Code') {
             steps {
-                git credentialsId: 'github-ssh-key', url: 'git@github.com:Onkar-kumbhar/exam-3025.git', branch: 'main'
+                git 'https://github.com/Onkar-kumbhar/DevSecOps.git'
             }
         }
 
-        stage('Run Semgrep') {
+        stage('Run Semgrep Scan') {
             steps {
                 sh '''
                 mkdir -p reports
-
-                # Run Semgrep and always overwrite the report
                 docker run --rm \
-                    -u 0:0 \
-                    -e HOME=/tmp \
-                    -v $(pwd):/src \
-                    returntocorp/semgrep \
-                    sh -c "semgrep --config=/src/semgrep/semgrep_rules.yml --output=/src/reports/semgrep_report.txt --force-color"
+                  -v "$PWD/app":/src \
+                  -v "$PWD/semgrep_rules.yml":/rules/semgrep_rules.yml \
+                  returntocorp/semgrep \
+                  semgrep --config=/rules/semgrep_rules.yml \
+                          --output=/src/../reports/semgrep_report.txt
                 '''
+            }
+        }
+
+        stage('Display Semgrep Report') {
+            steps {
+                sh 'cat reports/semgrep_report.txt || echo "No report found."'
             }
         }
     }
