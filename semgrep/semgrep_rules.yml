@@ -3,7 +3,38 @@ rules:
     pattern: eval(...)
     message: "Use of eval() detected. Avoid dynamic code execution."
     severity: ERROR
-    languages: [python, javascript]
+    languages: [python]
     metadata:
       owasp: A1-Injection
 
+  - id: sql-injection-fstring
+    pattern: cursor.execute(f"...{...}...")
+    message: "Possible SQL injection vulnerability via f-string."
+    severity: ERROR
+    languages: [python]
+    metadata:
+      owasp: A1-Injection
+
+  - id: sql-injection-string-format
+    pattern: cursor.execute("...{}".format(...))
+    message: "Possible SQL injection via .format() string in SQL query."
+    severity: ERROR
+    languages: [python]
+    metadata:
+      owasp: A1-Injection
+
+  - id: hardcoded-secret-key
+    pattern: app.secret_key = ...
+    message: "Hardcoded secret key detected. Use environment variables or config files."
+    severity: WARNING
+    languages: [python]
+    metadata:
+      owasp: A2-Broken Authentication
+
+  - id: ssrf-requests-get
+    pattern: requests.get(...)
+    message: "Possible SSRF vulnerability via user-controlled URL in requests.get()."
+    severity: WARNING
+    languages: [python]
+    metadata:
+      owasp: A10-Server Side Request Forgery (SSRF)
