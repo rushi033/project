@@ -7,8 +7,9 @@ HTML_DIR="$WORKSPACE/vuln-web"
 ZAP_API_KEY="12345"
 
 echo "📁 Setting up vulnerable HTML site..."
-mkdir -p /var/www/html
+mkdir -p "$HOME/html"
 cp -r "$HTML_DIR"/* /var/www/html/
+python3 -m http.server 80 --directory "$HOME/html" &
 
 echo "🔧 Starting Apache2..."
 systemctl enable apache2
