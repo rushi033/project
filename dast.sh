@@ -17,28 +17,19 @@ echo "Starting Python HTTP server on port 8080"
 python3 -m http.server 8081 --directory "$HOME/html" &
 sleep 5
 
-
 echo "🌐 Your local site should be live at: http://localhost"
 
-echo "⬇️ Downloading latest OWASP ZAP..."
-LATEST_ZAP_URL=$(wget -qO- https://api.github.com/repos/zaproxy/zaproxy/releases/latest | grep "browser_download_url.*unix\.sh" | cut -d '"' -f 4)
+# Removed ZAP download/install
 
-if [ -z "$LATEST_ZAP_URL" ]; then
-    echo "❌ Failed to fetch latest ZAP download URL."
-    exit 1
-fi
-
-cd ~
-wget "$LATEST_ZAP_URL" -O zap.sh
-chmod +x zap.sh
-./zap.sh -q -dir "$HOME/ZAP"
-
-echo "⏳ Waiting for ZAP startup in background..."
-"$HOME/ZAP/zap.sh" -daemon -config api.key=$ZAP_API_KEY -port 8090 -host 127.0.0.1 &
+echo "⏳ Starting ZAP daemon..."
+zaproxy -daemon -config api.key=$ZAP_API_KEY -port 8090 -host 127.0.0.1 &
 sleep 30
 
 echo "🚀 Starting DAST scan on http://localhost"
 mkdir -p "$REPORT_DIR"
+
+# ... rest unchanged ...
+
 
 echo "🔎 Starting Spider to build site tree..."
 curl "http://127.0.0.1:8090/JSON/spider/action/scan/?apikey=$ZAP_API_KEY&url=http://localhost&maxChildren=10"
