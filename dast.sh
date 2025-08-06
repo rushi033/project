@@ -8,7 +8,8 @@ ZAP_API_KEY="12345"
 
 echo "📁 Setting up vulnerable HTML site..."
 mkdir -p "$HOME/html"
-sudo cp -r "$HTML_DIR"/* /var/www/html/
+sudo cp -r "$HTML_DIR"/* "$HOME/html/"
+sudo cp -r "$HOME/html/"/* /var/www/html
 python3 -m http.server 80 --directory "$HOME/html" &
 
 echo "🔧 Starting Apache2..."
