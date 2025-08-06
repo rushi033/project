@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        WORKSPACE = "${env.WORKSPACE}"  // Required for path access in dast.sh
+    }
+
     stages {
         stage('Checkout Code') {
             steps {
@@ -28,20 +32,16 @@ pipeline {
             }
         }
 
-        stage('Run DAST Scan (ZAP Baseline)') {
+        stage('Run DAST (ZAP Script)') {
             steps {
-                sh '''
-                    mkdir -p zap_report
-                    docker run --rm -u root \
-                        -v $(pwd)/zap_report:/zap/wrk/:rw \
-                        -t owasp/zap2docker-stable zap-baseline.py \
-                        -t http://localhost \
-                        -r zap_report.html
-                '''
+                sh 'chmod +x ./dast.sh'
+                // Remove sudo for Jenkins execution
+                sh 'sed -i "s/sudo //g" ./dast.sh'
+                sh './dast.sh'
             }
         }
 
-        stage('Archive and Publish ZAP Report') {
+        stage('Publish ZAP Report') {
             steps {
                 archiveArtifacts artifacts: 'zap_report/zap_report.html', fingerprint: true
                 publishHTML(target: [
