@@ -12,8 +12,10 @@ cp -r "$HTML_DIR"/* /var/www/html/
 python3 -m http.server 80 --directory "$HOME/html" &
 
 echo "🔧 Starting Apache2..."
-systemctl enable apache2
-systemctl restart apache2
+echo "Starting Python HTTP server on port 8080"
+python3 -m http.server 8081 --directory "$HOME/html" &
+sleep 5
+
 
 echo "🌐 Your local site should be live at: http://localhost"
 
