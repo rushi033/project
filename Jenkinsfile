@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        WORKSPACE = "${env.WORKSPACE}"  // Required for path access in dast.sh
-    }
-
     stages {
         stage('Checkout Code') {
             steps {
