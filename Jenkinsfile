@@ -28,10 +28,16 @@ pipeline {
             }
         }
 
-        stage('Run DAST Scan') {
+        stage('Run DAST Scan (ZAP Baseline)') {
             steps {
-                sh 'chmod +x ./dast.sh'
-                sh './dast.sh'
+                sh '''
+                    mkdir -p zap_report
+                    docker run --rm -u root \
+                        -v $(pwd)/zap_report:/zap/wrk/:rw \
+                        -t owasp/zap2docker-stable zap-baseline.py \
+                        -t http://localhost \
+                        -r zap_report.html
+                '''
             }
         }
 
