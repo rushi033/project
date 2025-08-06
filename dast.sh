@@ -5,8 +5,9 @@ sudo apt install openjdk-17-jre -y
 sudo apt install curl -y
 
 # Vars
-REPORT_DIR="/home/osboxes/new/DevSecOps/zap_report"
-HTML_DIR="/home/osboxes/new/DevSecOps/vuln-web"
+REPORT_DIR="$WORKSPACE/zap_report"
+HTML_DIR="$WORKSPACE/vuln-web"
+
 
 ZAP_API_KEY="12345"
 
