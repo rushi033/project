@@ -37,14 +37,12 @@ pipeline {
 
         stage('Generate ZAP Report') {
             steps {
-                script {
-                    sh '''
-                        mkdir -p zap_report
-                        echo "Requesting ZAP HTML report..."
-                        curl --fail --silent "http://127.0.0.1:8090/OTHER/core/other/htmlreport/?apikey=12345" \
-                             -o "zap_report/zap_report.html" || echo "ZAP report generation failed."
-                    '''
-                }
+                sh '''
+                    mkdir -p zap_report
+                    echo "Requesting ZAP HTML report..."
+                    curl --fail --silent "http://127.0.0.1:8090/OTHER/core/other/htmlreport/?apikey=12345" \
+                         -o "zap_report/zap_report.html" || echo "ZAP report generation failed."
+                '''
             }
         }
 
@@ -54,7 +52,7 @@ pipeline {
                     reportDir: 'zap_report',
                     reportFiles: 'zap_report.html',
                     reportName: 'OWASP ZAP Report',
-                    allowMissing: true,  // <- prevents red stage if file missing
+                    allowMissing: false,
                     alwaysLinkToLastBuild: true,
                     keepAll: true
                 ])
