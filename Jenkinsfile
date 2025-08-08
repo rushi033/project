@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    triggers {
+        githubPush()  // ✅ This line tells Jenkins to run on GitHub push
+    }
+
     stages {
         stage('Checkout Code') {
             steps {

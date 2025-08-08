@@ -40,4 +40,3 @@ done
 
 echo "✅ DAST scan finished. Jenkins will now generate the report."
 
-# Don't kill ZAP here — Jenkins will fetch report and then stop it
