@@ -31,8 +31,6 @@ pipeline {
         stage('Run DAST (ZAP Script)') {
             steps {
                 sh 'chmod +x ./dast.sh'
-                // Remove sudo for Jenkins execution
-                sh 'sed -i "s/sudo //g" ./dast.sh'
                 sh './dast.sh'
             }
         }

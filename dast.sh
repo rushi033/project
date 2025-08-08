@@ -7,32 +7,25 @@ HTML_DIR="$WORKSPACE/vuln-web"
 ZAP_API_KEY="12345"
 
 echo "📁 Setting up vulnerable HTML site..."
-mkdir -p "$HOME/html"
-sudo cp -r "$HTML_DIR"/* "$HOME/html/"
-sudo cp -r "$HOME/html/"/* /var/www/html
-python3 -m http.server 80 --directory "$HOME/html" &
+mkdir -p "$WORKSPACE/html"
+cp -r "$HTML_DIR"/* "$WORKSPACE/html/"
 
-echo "🔧 Starting Apache2..."
-echo "Starting Python HTTP server on port 8080"
-python3 -m http.server 8081 --directory "$HOME/html" &
+echo "🔧 Starting Python HTTP servers on high ports..."
+python3 -m http.server 8080 --directory "$WORKSPACE/html" &
 sleep 5
 
-echo "🌐 Your local site should be live at: http://localhost"
+echo "🌐 Test site should be live at: http://localhost:8080"
 
-# Removed ZAP download/install
-
+# Start ZAP in daemon mode
 echo "⏳ Starting ZAP daemon..."
 zaproxy -daemon -config api.key=$ZAP_API_KEY -port 8090 -host 127.0.0.1 &
 sleep 30
 
-echo "🚀 Starting DAST scan on http://localhost"
+# Create report directory
 mkdir -p "$REPORT_DIR"
 
-# ... rest unchanged ...
-
-
 echo "🔎 Starting Spider to build site tree..."
-curl "http://127.0.0.1:8090/JSON/spider/action/scan/?apikey=$ZAP_API_KEY&url=http://localhost&maxChildren=10"
+curl "http://127.0.0.1:8090/JSON/spider/action/scan/?apikey=$ZAP_API_KEY&url=http://localhost:8080&maxChildren=10"
 
 while true; do
   spider_status=$(curl -s "http://127.0.0.1:8090/JSON/spider/view/status/?apikey=$ZAP_API_KEY" | grep -oP '\d+')
@@ -42,7 +35,7 @@ while true; do
 done
 
 echo "⚡ Starting Active Scan..."
-curl "http://127.0.0.1:8090/JSON/ascan/action/scan/?apikey=$ZAP_API_KEY&url=http://localhost&recurse=true"
+curl "http://127.0.0.1:8090/JSON/ascan/action/scan/?apikey=$ZAP_API_KEY&url=http://localhost:8080&recurse=true"
 
 while true; do
   status=$(curl -s "http://127.0.0.1:8090/JSON/ascan/view/status/?apikey=$ZAP_API_KEY" | grep -oP '\d+')
