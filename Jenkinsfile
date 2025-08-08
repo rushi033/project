@@ -1,7 +1,7 @@
 pipeline {
     agent any
-
     triggers {
+        // Trigger from GitHub webhook
         githubPush()
     }
 
@@ -23,6 +23,12 @@ pipeline {
                         semgrep --config=/semgrep_rules.yml \
                                 --output=/src/../reports/semgrep_report.txt
                 '''
+            }
+        }
+
+        stage('Display Semgrep Report') {
+            steps {
+                sh 'cat reports/semgrep_report.txt || echo "No Semgrep report found."'
             }
         }
 
@@ -51,34 +57,17 @@ pipeline {
     }
 
     post {
-        success {
+        always {
             emailext(
-                to: 'rushiambalkar2@gmail.com',
-                subject: "✅ Jenkins Build Successful: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: """Good news! 🎉
-                
-                The pipeline completed successfully.
-
-                - Job: ${env.JOB_NAME}
-                - Build Number: ${env.BUILD_NUMBER}
-                - Build URL: ${env.BUILD_URL}
-                """
-            )
-        }
-        failure {
-            emailext(
-                to: 'rushiambalkar2@gmail.com',
-                subject: "❌ Jenkins Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: """Uh-oh! 🚨
-                
-                The pipeline failed.
-
-                - Job: ${env.JOB_NAME}
-                - Build Number: ${env.BUILD_NUMBER}
-                - Build URL: ${env.BUILD_URL}
-                Please check the console output for details.
-                """
+                subject: "Jenkins Pipeline: ${currentBuild.fullDisplayName} - ${currentBuild.currentResult}",
+                body: """<p>Build Status: ${currentBuild.currentResult}</p>
+                         <p>Project: ${env.JOB_NAME}</p>
+                         <p>Build Number: ${env.BUILD_NUMBER}</p>
+                         <p>See full details: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>""",
+                to: 'rushiambalkar1@gmail.com',
+                attachmentsPattern: 'reports/semgrep_report.txt,zap_report/zap_report.html'
             )
         }
     }
 }
+
