@@ -22,35 +22,32 @@ pipeline {
             }
         }
 
-        stage('Publish Semgrep Report') {
+        stage('Display Semgrep Report') {
             steps {
-                sh '''
-                    mkdir -p reports_html
-                    echo "<html><body><pre>" > reports_html/semgrep_report.html
-                    cat reports/semgrep_report.txt >> reports_html/semgrep_report.html
-                    echo "</pre></body></html>" >> reports_html/semgrep_report.html
-                '''
-                publishHTML(target: [
-                    reportDir: 'reports_html',
-                    reportFiles: 'semgrep_report.html',
-                    reportName: 'Semgrep Report',
-                    allowMissing: false,
-                    alwaysLinkToLastBuild: true,
-                    keepAll: true
-                ])
+                sh 'cat reports/semgrep_report.txt || echo "No Semgrep report found."'
             }
         }
 
-        stage('Run DAST (ZAP Script)') {
+        stage('Run DAST Scan') {
             steps {
                 sh 'chmod +x ./dast.sh'
-                sh 'sed -i "s/sudo //g" ./dast.sh'
                 sh './dast.sh'
+            }
+        }
+
+        stage('Generate ZAP Report') {
+            steps {
+                sh '''
+                    mkdir -p zap_report
+                    curl "http://127.0.0.1:8090/OTHER/core/other/htmlreport/?apikey=12345" \
+                         -o "zap_report/zap_report.html"
+                '''
             }
         }
 
         stage('Publish ZAP Report') {
             steps {
+                archiveArtifacts artifacts: 'zap_report/zap_report.html', fingerprint: true
                 publishHTML(target: [
                     reportDir: 'zap_report',
                     reportFiles: 'zap_report.html',
@@ -60,6 +57,13 @@ pipeline {
                     keepAll: true
                 ])
             }
+        }
+    }
+
+    post {
+        always {
+            echo "🛑 Stopping ZAP..."
+            sh 'pkill -f zaproxy || true'
         }
     }
 }
