@@ -50,6 +50,19 @@ pipeline {
                 sh 'curl "http://127.0.0.1:8090/JSON/core/action/shutdown/?apikey=12345" || true'
             }
         }
+
+        stage('Publish ZAP Report') {
+            steps {
+                archiveArtifacts artifacts: 'zap_report/zap_report.html', fingerprint: true
+                publishHTML(target: [
+                    reportDir: 'zap_report',
+                    reportFiles: 'zap_report.html',
+                    reportName: 'OWASP ZAP Report',
+                    allowMissing: false,
+                    alwaysLinkToLastBuild: true,
+                    keepAll: true
+                ])
+            }
+        }
     }
 }
-
