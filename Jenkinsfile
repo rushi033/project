@@ -28,10 +28,20 @@ pipeline {
             }
         }
 
-        stage('Run DAST (ZAP Script)') {
+        stage('Run DAST Scan') {
             steps {
                 sh 'chmod +x ./dast.sh'
                 sh './dast.sh'
+            }
+        }
+
+        stage('Generate ZAP Report') {
+            steps {
+                sh '''
+                    mkdir -p zap_report
+                    curl "http://127.0.0.1:8090/OTHER/core/other/htmlreport/?apikey=12345" \
+                         -o "zap_report/zap_report.html"
+                '''
             }
         }
 
