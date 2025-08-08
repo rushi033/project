@@ -46,14 +46,5 @@ while true; do
   sleep 5
 done
 
-echo "📝 Generating report..."
-curl "http://127.0.0.1:8090/OTHER/core/other/htmlreport/?apikey=$ZAP_API_KEY" \
-  -o "$REPORT_DIR/zap_report.html" || echo "⚠️ Could not generate report"
-
-if [ -f "$REPORT_DIR/zap_report.html" ]; then
-    echo "✅ Report saved to: $REPORT_DIR/zap_report.html"
-else
-    echo "❌ No report generated"
-fi
-
-exit 0  # Always exit successfully
+echo "Scan Complete report will be generate on jenkins file "
+exit 0
