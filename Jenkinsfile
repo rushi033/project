@@ -39,15 +39,15 @@ pipeline {
             steps {
                 sh '''
                     mkdir -p zap_report
-                    echo "Requesting ZAP HTML report..."
-                    curl --fail --silent "http://127.0.0.1:8090/OTHER/core/other/htmlreport/?apikey=12345" \
-                         -o "zap_report/zap_report.html" || echo "ZAP report generation failed."
+                    curl "http://127.0.0.1:8090/OTHER/core/other/htmlreport/?apikey=12345" \
+                         -o "zap_report/zap_report.html"
                 '''
             }
         }
 
         stage('Publish ZAP Report') {
             steps {
+                archiveArtifacts artifacts: 'zap_report/zap_report.html', fingerprint: true
                 publishHTML(target: [
                     reportDir: 'zap_report',
                     reportFiles: 'zap_report.html',
@@ -57,13 +57,6 @@ pipeline {
                     keepAll: true
                 ])
             }
-        }
-    }
-
-    post {
-        always {
-            echo "🛑 Stopping ZAP..."
-            sh 'pkill -f zaproxy || true'
         }
     }
 }
