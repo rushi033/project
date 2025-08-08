@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     triggers {
-        githubPush()  // ✅ This line tells Jenkins to run on GitHub push
+        githubPush()
     }
 
     stages {
@@ -23,12 +23,6 @@ pipeline {
                         semgrep --config=/semgrep_rules.yml \
                                 --output=/src/../reports/semgrep_report.txt
                 '''
-            }
-        }
-
-        stage('Display Semgrep Report') {
-            steps {
-                sh 'cat reports/semgrep_report.txt || echo "No Semgrep report found."'
             }
         }
 
@@ -54,19 +48,37 @@ pipeline {
                 sh 'curl "http://127.0.0.1:8090/JSON/core/action/shutdown/?apikey=12345" || true'
             }
         }
+    }
 
-        stage('Publish ZAP Report') {
-            steps {
-                archiveArtifacts artifacts: 'zap_report/zap_report.html', fingerprint: true
-                publishHTML(target: [
-                    reportDir: 'zap_report',
-                    reportFiles: 'zap_report.html',
-                    reportName: 'OWASP ZAP Report',
-                    allowMissing: false,
-                    alwaysLinkToLastBuild: true,
-                    keepAll: true
-                ])
-            }
+    post {
+        success {
+            emailext(
+                to: 'rushiambalkar2@gmail.com',
+                subject: "✅ Jenkins Build Successful: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """Good news! 🎉
+                
+                The pipeline completed successfully.
+
+                - Job: ${env.JOB_NAME}
+                - Build Number: ${env.BUILD_NUMBER}
+                - Build URL: ${env.BUILD_URL}
+                """
+            )
+        }
+        failure {
+            emailext(
+                to: 'rushiambalkar2@gmail.com',
+                subject: "❌ Jenkins Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """Uh-oh! 🚨
+                
+                The pipeline failed.
+
+                - Job: ${env.JOB_NAME}
+                - Build Number: ${env.BUILD_NUMBER}
+                - Build URL: ${env.BUILD_URL}
+                Please check the console output for details.
+                """
+            )
         }
     }
 }
