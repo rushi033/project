@@ -60,10 +60,10 @@ pipeline {
         always {
             emailext(
                 subject: "Jenkins Pipeline: ${currentBuild.fullDisplayName} - ${currentBuild.currentResult}",
-                body: """<p>Build Status: ${currentBuild.currentResult}</p>
-                         <p>Project: ${env.JOB_NAME}</p>
-                         <p>Build Number: ${env.BUILD_NUMBER}</p>
-                         <p>See full details: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>""",
+                body: """Build Status: ${currentBuild.currentResult}
+                         Project: ${env.JOB_NAME}
+                         Build Number: ${env.BUILD_NUMBER}
+                         See full details: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>""",
                 to: 'rushiambalkar1@gmail.com',
                 attachmentsPattern: 'reports/semgrep_report.txt,zap_report/zap_report.html'
             )
